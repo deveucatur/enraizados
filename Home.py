@@ -15,10 +15,8 @@ def local_css(file_name):
 local_css("styles.css")
 
 # Cabeçalho Principal
-st.title("🌱 Enraizados em Cristo")
-st.write("""
-    ### Ser enraizados em Cristo, apaixonados pelo Espírito Santo e ensinar os outros a fazer o mesmo
-""")
+st.title("🌱 Enraizados")
+
 
 # Seções de Propósito e Visão
 st.header("Propósito e Visão")
@@ -114,4 +112,4 @@ else:
 
 # Rodapé com uma mensagem
 st.markdown("---")
-st.write("💒 **Igreja XYZ - Ministério de Adolescentes Enraizados em Cristo**")
+st.write("💒 **Igreja Assembleia de Deus - Ministério de Adolescentes El-Shaday**")
