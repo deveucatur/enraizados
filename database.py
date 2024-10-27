@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date, Boolean, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Date, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import declarative_base, sessionmaker
 import datetime
 
@@ -10,12 +10,13 @@ session = Session()
 class Adolescente(Base):
     __tablename__ = 'adolescentes'
     id = Column(Integer, primary_key=True)
-    nome = Column(String)
+    nome = Column(String, unique=True)  # Restringe nomes duplicados
     data_nascimento = Column(Date)
     telefone = Column(String)
     batizado_aguas = Column(Boolean)
     batizado_espirito = Column(Boolean)
     status = Column(String)
+
 
 class Evento(Base):
     __tablename__ = 'eventos'
