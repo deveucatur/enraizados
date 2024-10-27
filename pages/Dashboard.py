@@ -8,10 +8,13 @@ from sqlalchemy import func
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 st.header("📊 Dashboard Interativo")
 
-# Filtro por mês e ano
-st.sidebar.header("Filtros")
-mes = st.sidebar.selectbox("Selecione o Mês", list(range(1, 13)), format_func=lambda x: datetime.date(1900, x, 1).strftime('%B'))
-ano = st.sidebar.selectbox("Selecione o Ano", [datetime.datetime.now().year, datetime.datetime.now().year - 1])
+# Filtro por mês e ano (movido para o corpo principal)
+st.subheader("Filtros")
+col1, col2 = st.columns(2)
+with col1:
+    mes = st.selectbox("Selecione o Mês", list(range(1, 13)), format_func=lambda x: datetime.date(1900, x, 1).strftime('%B'))
+with col2:
+    ano = st.selectbox("Selecione o Ano", [datetime.datetime.now().year, datetime.datetime.now().year - 1])
 
 # Data inicial e final do filtro
 data_inicio = datetime.date(ano, mes, 1)
