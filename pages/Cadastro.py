@@ -1,6 +1,7 @@
 import streamlit as st
 from database import Adolescente, session
 import pandas as pd
+from sqlalchemy import func
 
 st.header("Cadastro de Adolescentes")
 
@@ -16,7 +17,7 @@ def adicionar_adolescente():
 
         if submit:
             # Verificar se já existe um usuário com o mesmo nome
-            existe = session.query(Adolescente).filter_by(nome=nome).first()
+            existe = session.query(Adolescente).filter(func.lower(Adolescente.nome) == nome.lower()).first()
             if existe:
                 st.error("Já existe um adolescente cadastrado com este nome.")
             else:
@@ -31,6 +32,7 @@ def adicionar_adolescente():
                 session.add(novo_adolescente)
                 session.commit()
                 st.success("Adolescente adicionado com sucesso!")
+                st.experimental_rerun()
 
 def exibir_adolescentes():
     st.subheader("Lista de Adolescentes")
@@ -50,21 +52,21 @@ def exibir_adolescentes():
         st.info("Nenhum adolescente encontrado com os filtros aplicados.")
         return
 
-    # Exibir dados com opções de editar e excluir
-    for index, row in data.iterrows():
-        with st.expander(f"{row['nome']}"):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"**Data de Nascimento:** {row['data_nascimento']}")
-                st.write(f"**Telefone:** {row['telefone']}")
-                st.write(f"**Batizado nas Águas:** {'Sim' if row['batizado_aguas'] else 'Não'}")
-                st.write(f"**Batizado no Espírito Santo:** {'Sim' if row['batizado_espirito'] else 'Não'}")
-                st.write(f"**Status:** {row['status']}")
-            with col2:
-                if st.button("Editar", key=f"edit_{row['id']}"):
-                    editar_adolescente(row['id'])
-                if st.button("Excluir", key=f"delete_{row['id']}"):
-                    excluir_adolescente(row['id'])
+    # Adicionar colunas para editar e excluir
+    data['Editar'] = 'Editar'
+    data['Excluir'] = 'Excluir'
+
+    # Exibir tabela interativa
+    st.table(data[['id', 'nome', 'data_nascimento', 'telefone', 'batizado_aguas', 'batizado_espirito', 'status']])
+
+    # Selecionar adolescente para editar ou excluir
+    adolescente_id = st.number_input("Digite o ID do Adolescente para Editar/Excluir", min_value=0, step=1)
+    acao = st.selectbox("Ação", ["Selecionar", "Editar", "Excluir"])
+
+    if acao == "Editar" and adolescente_id > 0:
+        editar_adolescente(adolescente_id)
+    elif acao == "Excluir" and adolescente_id > 0:
+        excluir_adolescente(adolescente_id)
 
 def editar_adolescente(adolescente_id):
     adolescente = session.query(Adolescente).filter_by(id=adolescente_id).first()
@@ -85,7 +87,7 @@ def editar_adolescente(adolescente_id):
             if submit:
                 # Verificar se o novo nome já existe em outro registro
                 existe = session.query(Adolescente).filter(
-                    Adolescente.nome == nome, Adolescente.id != adolescente_id
+                    func.lower(Adolescente.nome) == nome.lower(), Adolescente.id != adolescente_id
                 ).first()
                 if existe:
                     st.error("Já existe um adolescente cadastrado com este nome.")
@@ -99,16 +101,20 @@ def editar_adolescente(adolescente_id):
                     session.commit()
                     st.success("Adolescente atualizado com sucesso.")
                     st.experimental_rerun()
+    else:
+        st.error("Adolescente não encontrado.")
 
 def excluir_adolescente(adolescente_id):
     adolescente = session.query(Adolescente).filter_by(id=adolescente_id).first()
     if adolescente:
-        confirmar = st.warning(f"Tem certeza que deseja excluir {adolescente.nome}? Esta ação não pode ser desfeita.")
-        if st.button("Confirmar Exclusão", key=f"confirm_delete_{adolescente_id}"):
+        confirmar = st.checkbox(f"Confirmar exclusão de {adolescente.nome}")
+        if confirmar:
             session.delete(adolescente)
             session.commit()
             st.success("Adolescente excluído com sucesso.")
             st.experimental_rerun()
+    else:
+        st.error("Adolescente não encontrado.")
 
 adicionar_adolescente()
 exibir_adolescentes()
