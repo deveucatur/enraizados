@@ -54,19 +54,17 @@ def exibir_adolescentes():
 
     # Adicionar colunas para editar e excluir
     data['Editar'] = 'Editar'
-    data['Excluir'] = 'Excluir'
 
     # Exibir tabela interativa
     st.table(data[['id', 'nome', 'data_nascimento', 'telefone', 'batizado_aguas', 'batizado_espirito', 'status']])
 
     # Selecionar adolescente para editar ou excluir
     adolescente_id = st.number_input("Digite o ID do Adolescente para Editar/Excluir", min_value=0, step=1)
-    acao = st.selectbox("Ação", ["Selecionar", "Editar", "Excluir"])
+    acao = st.selectbox("Ação", ["Editar"])
 
     if acao == "Editar" and adolescente_id > 0:
         editar_adolescente(adolescente_id)
-    elif acao == "Excluir" and adolescente_id > 0:
-        excluir_adolescente(adolescente_id)
+
 
 def editar_adolescente(adolescente_id):
     adolescente = session.query(Adolescente).filter_by(id=adolescente_id).first()
@@ -104,17 +102,6 @@ def editar_adolescente(adolescente_id):
     else:
         st.error("Adolescente não encontrado.")
 
-def excluir_adolescente(adolescente_id):
-    adolescente = session.query(Adolescente).filter_by(id=adolescente_id).first()
-    if adolescente:
-        confirmar = st.checkbox(f"Confirmar exclusão de {adolescente.nome}")
-        if confirmar:
-            session.delete(adolescente)
-            session.commit()
-            st.success("Adolescente excluído com sucesso.")
-            st.rerun()
-    else:
-        st.error("Adolescente não encontrado.")
 
 adicionar_adolescente()
 exibir_adolescentes()
