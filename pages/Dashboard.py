@@ -11,17 +11,26 @@ st.header("📊 Dashboard Interativo")
 # Filtro por mês e ano (movido para o corpo principal)
 st.subheader("Filtros")
 col1, col2 = st.columns(2)
-with col1:
-    mes = st.selectbox("Selecione o Mês", list(range(1, 13)), format_func=lambda x: datetime.date(1900, x, 1).strftime('%B'))
-with col2:
-    ano = st.selectbox("Selecione o Ano", [datetime.datetime.now().year, datetime.datetime.now().year - 1])
 
-# Data inicial e final do filtro
-data_inicio = datetime.date(ano, mes, 1)
-if mes == 12:
-    data_fim = datetime.date(ano + 1, 1, 1)
-else:
-    data_fim = datetime.date(ano, mes + 1, 1)
+from datetime import datetime
+
+mes_atual = datetime.now().month
+ano_atual = datetime.now().year
+
+with col1:
+    mes = st.selectbox(
+        "Selecione o Mês",
+        list(range(1, 13)),
+        format_func=lambda x: datetime(1900, x, 1).strftime('%B'),
+        index=mes_atual - 1
+    )
+with col2:
+    anos_disponiveis = [ano_atual, ano_atual - 1]
+    ano = st.selectbox(
+        "Selecione o Ano",
+        anos_disponiveis,
+        index=0
+    )
 
 # Dados Filtrados
 eventos_filtrados = session.query(Evento).filter(Evento.data >= data_inicio, Evento.data < data_fim).all()
