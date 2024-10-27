@@ -18,6 +18,53 @@ def criar_evento():
             session.commit()
             st.success(f"Evento '{nome_evento}' criado com sucesso!")
 
+def registrar_presenca():
+    st.subheader("Registrar Presença")
+
+    # Selecionar evento não encerrado
+    eventos_abertos = session.query(Evento).filter_by(encerrado=False).all()
+    if not eventos_abertos:
+        st.info("Não há eventos abertos para registrar presença.")
+        return
+
+    evento_selecionado = st.selectbox(
+        "Selecione o Evento",
+        eventos_abertos,
+        format_func=lambda x: f"{x.nome} - {x.data.strftime('%d/%m/%Y')}"
+    )
+
+    # Verificar se já foi registrada presença neste evento
+    presencas_existentes = session.query(Presenca).filter_by(evento_id=evento_selecionado.id).first()
+    if presencas_existentes:
+        st.warning("A presença já foi registrada para este evento.")
+        return
+
+    adolescentes = session.query(Adolescente).filter_by(status="Ativo").all()
+    presentes = st.multiselect(
+        "Selecione os Presentes",
+        adolescentes,
+        format_func=lambda x: x.nome
+    )
+
+    # Visitantes
+    st.subheader("Adicionar Visitantes")
+    num_visitantes = st.number_input("Número de Visitantes", min_value=0, step=1)
+    visitantes = []
+    for i in range(int(num_visitantes)):
+        with st.expander(f"Visitante {i+1}"):
+            nome_visitante = st.text_input(f"Nome do Visitante {i+1}")
+            telefone_visitante = st.text_input(f"Telefone do Visitante {i+1}")
+            convidado_por = st.selectbox(
+                f"Convidado por (Adolescente)",
+                adolescentes,
+                format_func=lambda x: x.nome,
+                key=f"convidado_por_{i}"
+            )
+            visitantes.append({
+                'nome': nome_visitante,
+                'telefone': telefone_visitante,
+                'convidado_por_id': convidado_por.id
+            })
 if st.button("Registrar Presenças"):
     # Criar um conjunto de IDs dos presentes para facilitar a verificação
     presentes_ids = {adolescente.id for adolescente in presentes}
