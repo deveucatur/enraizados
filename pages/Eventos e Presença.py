@@ -18,78 +18,35 @@ def criar_evento():
             session.commit()
             st.success(f"Evento '{nome_evento}' criado com sucesso!")
 
-def registrar_presenca():
-    st.subheader("Registrar Presença")
+if st.button("Registrar Presenças"):
+    # Criar um conjunto de IDs dos presentes para facilitar a verificação
+    presentes_ids = {adolescente.id for adolescente in presentes}
+    
+    # Registrar presença dos presentes e ausentes
+    for adolescente in adolescentes:
+        presente = adolescente.id in presentes_ids
+        nova_presenca = Presenca(
+            adolescente_id=adolescente.id,
+            evento_id=evento_selecionado.id,
+            presente=presente
+        )
+        session.add(nova_presenca)
 
-    # Selecionar evento não encerrado
-    eventos_abertos = session.query(Evento).filter_by(encerrado=False).all()
-    if not eventos_abertos:
-        st.info("Não há eventos abertos para registrar presença.")
-        return
+    # Registrar visitantes
+    for visitante_data in visitantes:
+        novo_visitante = Visitante(
+            nome=visitante_data['nome'],
+            telefone=visitante_data['telefone'],
+            convidado_por=visitante_data['convidado_por_id'],
+            evento_id=evento_selecionado.id  # Certifique-se de incluir o evento_id
+        )
+        session.add(novo_visitante)
 
-    evento_selecionado = st.selectbox(
-        "Selecione o Evento",
-        eventos_abertos,
-        format_func=lambda x: f"{x.nome} - {x.data.strftime('%d/%m/%Y')}"
-    )
+    # Encerrar o evento para novos registros
+    evento_selecionado.encerrado = True
+    session.commit()
+    st.success("Presenças registradas e evento encerrado com sucesso!")
 
-    # Verificar se já foi registrada presença neste evento
-    presencas_existentes = session.query(Presenca).filter_by(evento_id=evento_selecionado.id).first()
-    if presencas_existentes:
-        st.warning("A presença já foi registrada para este evento.")
-        return
-
-    adolescentes = session.query(Adolescente).filter_by(status="Ativo").all()
-    presentes = st.multiselect(
-        "Selecione os Presentes",
-        adolescentes,
-        format_func=lambda x: x.nome
-    )
-
-    # Visitantes
-    st.subheader("Adicionar Visitantes")
-    num_visitantes = st.number_input("Número de Visitantes", min_value=0, step=1)
-    visitantes = []
-    for i in range(int(num_visitantes)):
-        with st.expander(f"Visitante {i+1}"):
-            nome_visitante = st.text_input(f"Nome do Visitante {i+1}")
-            telefone_visitante = st.text_input(f"Telefone do Visitante {i+1}")
-            convidado_por = st.selectbox(
-                f"Convidado por (Adolescente)",
-                adolescentes,
-                format_func=lambda x: x.nome,
-                key=f"convidado_por_{i}"
-            )
-            visitantes.append({
-                'nome': nome_visitante,
-                'telefone': telefone_visitante,
-                'convidado_por_id': convidado_por.id
-            })
-
-    if st.button("Registrar Presenças"):
-        # Registrar presença dos presentes
-        for adolescente in adolescentes:
-            presente = adolescente in presentes
-            nova_presenca = Presenca(
-                adolescente_id=adolescente.id,
-                evento_id=evento_selecionado.id,
-                presente=presente  # Novo campo que precisamos adicionar
-            )
-            session.add(nova_presenca)
-
-        # Registrar visitantes
-        for visitante_data in visitantes:
-            novo_visitante = Visitante(
-                nome=visitante_data['nome'],
-                telefone=visitante_data['telefone'],
-                convidado_por=visitante_data['convidado_por_id']
-            )
-            session.add(novo_visitante)
-
-        # Encerrar o evento para novos registros
-        evento_selecionado.encerrado = True
-        session.commit()
-        st.success("Presenças registradas e evento encerrado com sucesso!")
 
 def historico_eventos():
     st.subheader("Histórico de Eventos")
