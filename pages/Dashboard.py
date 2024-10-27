@@ -32,6 +32,14 @@ with col2:
         index=0
     )
 
+# Data inicial e final do filtro
+data_inicio = datetime.date(ano, mes, 1)
+if mes == 12:
+    data_fim = datetime.date(ano + 1, 1, 1)
+else:
+    data_fim = datetime.date(ano, mes + 1, 1)
+
+
 # Dados Filtrados
 eventos_filtrados = session.query(Evento).filter(Evento.data >= data_inicio, Evento.data < data_fim).all()
 eventos_ids = [evento.id for evento in eventos_filtrados]
