@@ -1,28 +1,25 @@
 import streamlit as st
+import datetime
 from database import Adolescente, Presenca, Evento, Visitante, session
 import pandas as pd
 import plotly.express as px
-import datetime
-from datetime import datetime, date
 from sqlalchemy import func
 
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 st.header("📊 Dashboard Interativo")
 
-# Filtro por mês e ano (movido para o corpo principal)
+# Obter o mês e ano atuais
+mes_atual = datetime.datetime.now().month
+ano_atual = datetime.datetime.now().year
+
 st.subheader("Filtros")
 col1, col2 = st.columns(2)
-
-from datetime import datetime
-
-mes_atual = datetime.now().month
-ano_atual = datetime.now().year
 
 with col1:
     mes = st.selectbox(
         "Selecione o Mês",
         list(range(1, 13)),
-        format_func=lambda x: datetime(1900, x, 1).strftime('%B'),
+        format_func=lambda x: datetime.date(1900, x, 1).strftime('%B'),
         index=mes_atual - 1
     )
 with col2:
