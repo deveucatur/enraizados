@@ -3,7 +3,6 @@ from database import Adolescente, Presenca, Evento, Visitante, session
 import pandas as pd
 import plotly.express as px
 import datetime
-from datetime import datetime
 from sqlalchemy import func
 
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
