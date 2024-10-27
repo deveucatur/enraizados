@@ -65,34 +65,34 @@ def registrar_presenca():
                 'telefone': telefone_visitante,
                 'convidado_por_id': convidado_por.id
             })
-if st.button("Registrar Presenças"):
-    # Criar um conjunto de IDs dos presentes para facilitar a verificação
-    presentes_ids = {adolescente.id for adolescente in presentes}
+    if st.button("Registrar Presenças"):
+        # Criar um conjunto de IDs dos presentes para facilitar a verificação
+        presentes_ids = {adolescente.id for adolescente in presentes}
+        
+        # Registrar presença dos presentes e ausentes
+        for adolescente in adolescentes:
+            presente = adolescente.id in presentes_ids
+            nova_presenca = Presenca(
+                adolescente_id=adolescente.id,
+                evento_id=evento_selecionado.id,
+                presente=presente
+            )
+            session.add(nova_presenca)
     
-    # Registrar presença dos presentes e ausentes
-    for adolescente in adolescentes:
-        presente = adolescente.id in presentes_ids
-        nova_presenca = Presenca(
-            adolescente_id=adolescente.id,
-            evento_id=evento_selecionado.id,
-            presente=presente
-        )
-        session.add(nova_presenca)
-
-    # Registrar visitantes
-    for visitante_data in visitantes:
-        novo_visitante = Visitante(
-            nome=visitante_data['nome'],
-            telefone=visitante_data['telefone'],
-            convidado_por=visitante_data['convidado_por_id'],
-            evento_id=evento_selecionado.id  # Certifique-se de incluir o evento_id
-        )
-        session.add(novo_visitante)
-
-    # Encerrar o evento para novos registros
-    evento_selecionado.encerrado = True
-    session.commit()
-    st.success("Presenças registradas e evento encerrado com sucesso!")
+        # Registrar visitantes
+        for visitante_data in visitantes:
+            novo_visitante = Visitante(
+                nome=visitante_data['nome'],
+                telefone=visitante_data['telefone'],
+                convidado_por=visitante_data['convidado_por_id'],
+                evento_id=evento_selecionado.id  # Certifique-se de incluir o evento_id
+            )
+            session.add(novo_visitante)
+    
+        # Encerrar o evento para novos registros
+        evento_selecionado.encerrado = True
+        session.commit()
+        st.success("Presenças registradas e evento encerrado com sucesso!")
 
 
 def historico_eventos():
