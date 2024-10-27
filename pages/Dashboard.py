@@ -9,16 +9,6 @@ st.header("Relatórios e Dashboards")
 total_adolescentes = session.query(Adolescente).count()
 st.metric("Total de Adolescentes", total_adolescentes)
 
-# Distribuição por faixa etária
-st.subheader("Distribuição por Faixa Etária")
-adolescentes = session.query(Adolescente).all()
-idades = [datetime.datetime.now().year - a.data_nascimento.year for a in adolescentes]
-faixas = ['11-12', '13', '14-15']
-contagem = [sum(11 <= idade <= 12 for idade in idades),
-            idades.count(13),
-            sum(14 <= idade <= 15 for idade in idades)]
-plt.bar(faixas, contagem)
-st.pyplot(plt)
 
 # Percentual de batizados
 st.subheader("Percentual de Batizados")
