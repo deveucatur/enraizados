@@ -30,7 +30,7 @@ class Visitante(Base):
     nome = Column(String)
     telefone = Column(String)
     convidado_por = Column(Integer, ForeignKey('adolescentes.id'))
-    evento_id = Column(Integer, ForeignKey('eventos.id'))  # Novo campo
+    evento_id = Column(Integer, ForeignKey('eventos.id'))  # Certifique-se de que este campo está presente
 
 
 class Presenca(Base):
@@ -38,5 +38,6 @@ class Presenca(Base):
     id = Column(Integer, primary_key=True)
     adolescente_id = Column(Integer, ForeignKey('adolescentes.id'))
     evento_id = Column(Integer, ForeignKey('eventos.id'))
+    presente = Column(Boolean)  # Certifique-se de que este campo está presente
 
 Base.metadata.create_all(engine)
