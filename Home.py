@@ -15,7 +15,6 @@ def local_css(file_name):
 local_css("styles.css")
 
 # Cabeçalho Principal
-st.image("logo.png", width=150)
 st.title("🌱 Enraizados")
 
 
