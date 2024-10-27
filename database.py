@@ -22,6 +22,15 @@ class Evento(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String)
     data = Column(Date)
+    encerrado = Column(Boolean, default=False) 
+    
+class Visitante(Base):
+    __tablename__ = 'visitantes'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String)
+    telefone = Column(String)
+    convidado_por = Column(Integer, ForeignKey('adolescentes.id'))  # Quem convidou
+
 
 class Presenca(Base):
     __tablename__ = 'presencas'
