@@ -21,7 +21,7 @@ def criar_evento():
 def registrar_presenca():
     st.subheader("Registrar Presença")
 
-    # Selecionar evento não encerrado
+    # Selecionar eventos não encerrados
     eventos_abertos = session.query(Evento).filter_by(encerrado=False).all()
     if not eventos_abertos:
         st.info("Não há eventos abertos para registrar presença.")
@@ -52,8 +52,8 @@ def registrar_presenca():
     visitantes = []
     for i in range(int(num_visitantes)):
         with st.expander(f"Visitante {i+1}"):
-            nome_visitante = st.text_input(f"Nome do Visitante {i+1}")
-            telefone_visitante = st.text_input(f"Telefone do Visitante {i+1}")
+            nome_visitante = st.text_input(f"Nome do Visitante {i+1}", key=f"nome_visitante_{i}")
+            telefone_visitante = st.text_input(f"Telefone do Visitante {i+1}", key=f"telefone_visitante_{i}")
             convidado_por = st.selectbox(
                 f"Convidado por (Adolescente)",
                 adolescentes,
@@ -65,10 +65,11 @@ def registrar_presenca():
                 'telefone': telefone_visitante,
                 'convidado_por_id': convidado_por.id
             })
+
     if st.button("Registrar Presenças"):
-        # Criar um conjunto de IDs dos presentes para facilitar a verificação
+        # Criar um conjunto de IDs dos presentes
         presentes_ids = {adolescente.id for adolescente in presentes}
-        
+
         # Registrar presença dos presentes e ausentes
         for adolescente in adolescentes:
             presente = adolescente.id in presentes_ids
@@ -78,21 +79,23 @@ def registrar_presenca():
                 presente=presente
             )
             session.add(nova_presenca)
-    
+
         # Registrar visitantes
         for visitante_data in visitantes:
             novo_visitante = Visitante(
                 nome=visitante_data['nome'],
                 telefone=visitante_data['telefone'],
                 convidado_por=visitante_data['convidado_por_id'],
-                evento_id=evento_selecionado.id  # Certifique-se de incluir o evento_id
+                evento_id=evento_selecionado.id
             )
             session.add(novo_visitante)
-    
+
         # Encerrar o evento para novos registros
         evento_selecionado.encerrado = True
         session.commit()
         st.success("Presenças registradas e evento encerrado com sucesso!")
+        st.rerun()
+
 
 
 def historico_eventos():
