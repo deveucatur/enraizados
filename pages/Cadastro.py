@@ -32,7 +32,7 @@ def adicionar_adolescente():
                 session.add(novo_adolescente)
                 session.commit()
                 st.success("Adolescente adicionado com sucesso!")
-                st.experimental_rerun()
+                st.rerun()
 
 def exibir_adolescentes():
     st.subheader("Lista de Adolescentes")
@@ -100,7 +100,7 @@ def editar_adolescente(adolescente_id):
                     adolescente.status = status
                     session.commit()
                     st.success("Adolescente atualizado com sucesso.")
-                    st.experimental_rerun()
+                    st.rerun()
     else:
         st.error("Adolescente não encontrado.")
 
@@ -112,7 +112,7 @@ def excluir_adolescente(adolescente_id):
             session.delete(adolescente)
             session.commit()
             st.success("Adolescente excluído com sucesso.")
-            st.experimental_rerun()
+            st.rerun()
     else:
         st.error("Adolescente não encontrado.")
 
