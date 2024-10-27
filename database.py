@@ -29,7 +29,8 @@ class Visitante(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String)
     telefone = Column(String)
-    convidado_por = Column(Integer, ForeignKey('adolescentes.id'))  # Quem convidou
+    convidado_por = Column(Integer, ForeignKey('adolescentes.id'))
+    evento_id = Column(Integer, ForeignKey('eventos.id'))  # Novo campo
 
 
 class Presenca(Base):
