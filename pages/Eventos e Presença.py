@@ -78,6 +78,9 @@ def historico_eventos():
                     })
                 df_visitantes = pd.DataFrame(data_visitantes)
                 st.table(df_visitantes)
+            else:
+                st.write("Nenhum visitante neste evento.")
+
 
 # Adicionar o campo 'presente' na tabela Presenca
 def atualizar_presenca_model():
