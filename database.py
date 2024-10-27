@@ -6,11 +6,10 @@ engine = create_engine('sqlite:///adolescentes.db')
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
-
 class Adolescente(Base):
     __tablename__ = 'adolescentes'
     id = Column(Integer, primary_key=True)
-    nome = Column(String, unique=True)  # Restringe nomes duplicados
+    nome = Column(String, unique=True)  # Nome único
     data_nascimento = Column(Date)
     telefone = Column(String)
     batizado_aguas = Column(Boolean)
