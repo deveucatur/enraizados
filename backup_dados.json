@@ -1,1 +1,129 @@
-{ "adolescentes": [ { "id": 1, "nome": "Gabriel Lima", "data_nascimento": "1997-10-15", "telefone": "69992180620", "batizado_aguas": true, "batizado_espirito": true, "status": "Ativo" }, { "id": 2, "nome": "Thiago Reis", "data_nascimento": "1987-10-15", "telefone": "69992180620", "batizado_aguas": true, "batizado_espirito": false, "status": "Ativo" }, { "id": 3, "nome": "Larissa Lima", "data_nascimento": "2000-07-20", "telefone": "69992180620", "batizado_aguas": true, "batizado_espirito": true, "status": "Ativo" } ], "eventos": [ { "id": 1, "nome": "Culto Enraizados", "data": "2024-10-31", "encerrado": false }, { "id": 2, "nome": "Ora\u00e7\u00e3o", "data": "2024-10-28", "encerrado": false } ], "presencas": [ { "id": 1, "adolescente_id": 1, "evento_id": 1, "presente": true }, { "id": 2, "adolescente_id": 2, "evento_id": 1, "presente": true }, { "id": 3, "adolescente_id": 3, "evento_id": 1, "presente": false } ], "visitantes": [ { "id": 1, "nome": "Renato Reis", "telefone": "6789034", "convidado_por": 2, "evento_id": 1 } ] }
+{
+    "adolescentes": [
+        {
+            "id": 1,
+            "nome": "Gabriel Lima",
+            "data_nascimento": "1997-10-15",
+            "telefone": "69992180620",
+            "batizado_aguas": true,
+            "batizado_espirito": true,
+            "status": "Ativo"
+        },
+        {
+            "id": 2,
+            "nome": "Thiago Reis",
+            "data_nascimento": "1987-10-15",
+            "telefone": "69992180620",
+            "batizado_aguas": true,
+            "batizado_espirito": false,
+            "status": "Ativo"
+        },
+        {
+            "id": 3,
+            "nome": "Larissa Lima",
+            "data_nascimento": "2000-07-20",
+            "telefone": "69992180620",
+            "batizado_aguas": true,
+            "batizado_espirito": true,
+            "status": "Ativo"
+        },
+        {
+            "id": 4,
+            "nome": "Fulano de Tal",
+            "data_nascimento": "2004-10-28",
+            "telefone": "5556652",
+            "batizado_aguas": true,
+            "batizado_espirito": true,
+            "status": "Ativo"
+        },
+        {
+            "id": 5,
+            "nome": "Beltrano de Tal",
+            "data_nascimento": "2004-10-30",
+            "telefone": "5556652",
+            "batizado_aguas": true,
+            "batizado_espirito": true,
+            "status": "Ativo"
+        }
+    ],
+    "eventos": [
+        {
+            "id": 1,
+            "nome": "Culto Enraizados",
+            "data": "2024-10-31",
+            "encerrado": false
+        },
+        {
+            "id": 2,
+            "nome": "Ora\u00e7\u00e3o",
+            "data": "2024-10-28",
+            "encerrado": false
+        }
+    ],
+    "presencas": [
+        {
+            "id": 1,
+            "adolescente_id": 1,
+            "evento_id": 1,
+            "presente": true
+        },
+        {
+            "id": 2,
+            "adolescente_id": 2,
+            "evento_id": 1,
+            "presente": true
+        },
+        {
+            "id": 3,
+            "adolescente_id": 3,
+            "evento_id": 1,
+            "presente": false
+        },
+        {
+            "id": 4,
+            "adolescente_id": 1,
+            "evento_id": 2,
+            "presente": true
+        },
+        {
+            "id": 5,
+            "adolescente_id": 2,
+            "evento_id": 2,
+            "presente": false
+        },
+        {
+            "id": 6,
+            "adolescente_id": 3,
+            "evento_id": 2,
+            "presente": true
+        },
+        {
+            "id": 7,
+            "adolescente_id": 4,
+            "evento_id": 2,
+            "presente": true
+        },
+        {
+            "id": 8,
+            "adolescente_id": 5,
+            "evento_id": 2,
+            "presente": false
+        }
+    ],
+    "visitantes": [
+        {
+            "id": 1,
+            "nome": "Renato Reis",
+            "telefone": "6789034",
+            "convidado_por": 2,
+            "evento_id": 1
+        },
+        {
+            "id": 2,
+            "nome": "Rogerio Silva",
+            "telefone": "55223655",
+            "convidado_por": 3,
+            "evento_id": 2
+        }
+    ]
+}
