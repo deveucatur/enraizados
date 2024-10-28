@@ -17,19 +17,21 @@ def criar_evento():
             session.add(novo_evento)
             session.commit()
             st.success(f"Evento '{nome_evento}' criado com sucesso!")
-
 def registrar_presenca():
     st.subheader("Registrar Presença")
 
-    # Selecionar eventos não encerrados
-    eventos_abertos = session.query(Evento).filter_by(encerrado=False).all()
-    if not eventos_abertos:
-        st.info("Não há eventos abertos para registrar presença.")
+    # Selecionar eventos que ainda não tiveram presença registrada
+    eventos_sem_presenca = session.query(Evento).filter(
+        ~Evento.id.in_(session.query(Presenca.evento_id).distinct())
+    ).filter_by(encerrado=False).all()
+    
+    if not eventos_sem_presenca:
+        st.info("Não há eventos sem presença registrada.")
         return
 
     evento_selecionado = st.selectbox(
         "Selecione o Evento",
-        eventos_abertos,
+        eventos_sem_presenca,
         format_func=lambda x: f"{x.nome} - {x.data.strftime('%d/%m/%Y')}"
     )
 
