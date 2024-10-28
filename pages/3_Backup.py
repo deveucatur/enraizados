@@ -10,8 +10,8 @@ import base64
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
 # Configurações do GitHub
-GITHUB_USER = "seu_usuario"
-GITHUB_REPO = "seu_repositorio"
+GITHUB_USER = "deveucatur"
+GITHUB_REPO = "enraizados"
 BACKUP_FILE = "backup_dados.json"
 BRANCH = "main"
 
