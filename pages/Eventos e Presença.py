@@ -101,7 +101,7 @@ def registrar_presenca():
 
 
 def historico_eventos():
-    st.subheader("Histórico de Eventos")
+    st.subheader("Filtros de Histórico")
 
     # Filtro de Mês e Ano
     mes_atual = datetime.datetime.now().month
@@ -135,41 +135,31 @@ def historico_eventos():
         st.info("Nenhum evento encontrado para o período selecionado.")
         return
 
-    # Resumo Geral
-    total_presentes = 0
-    total_ausentes = 0
-    total_visitantes = 0
-    total_adolescentes = 0
-
-    for evento in eventos_filtrados:
-        presencas = session.query(Presenca).filter_by(evento_id=evento.id).all()
-        presentes = sum(1 for p in presencas if p.presente)
-        ausentes = sum(1 for p in presencas if not p.presente)
-        visitantes = session.query(Visitante).filter_by(evento_id=evento.id).count()
-
-        total_presentes += presentes
-        total_ausentes += ausentes
-        total_visitantes += visitantes
-        total_adolescentes += (presentes + ausentes)
-
-    # Calcular Percentual de Frequência
-    if total_adolescentes > 0:
-        percentual_frequencia = (total_presentes / total_adolescentes) * 100
-    else:
-        percentual_frequencia = 0
-
-    # Exibir Resumo
-    st.markdown("### Resumo de Frequência")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Presentes", total_presentes)
-    col2.metric("Total Visitantes", total_visitantes)
-    col3.metric("Total Ausentes", total_ausentes)
-    col4.metric("Percentual de Frequência", f"{percentual_frequencia:.2f}%")
-
     # Listar Eventos Filtrados
     for evento in eventos_filtrados:
         with st.expander(f"{evento.nome} - {evento.data.strftime('%d/%m/%Y')}"):
+            # Calcular Resumo de Frequência para o Evento
             presencas = session.query(Presenca).filter_by(evento_id=evento.id).all()
+            presentes = sum(1 for p in presencas if p.presente)
+            ausentes = sum(1 for p in presencas if not p.presente)
+            visitantes = session.query(Visitante).filter_by(evento_id=evento.id).count()
+            total_adolescentes = presentes + ausentes
+
+            # Calcular Percentual de Frequência
+            if total_adolescentes > 0:
+                percentual_frequencia = (presentes / total_adolescentes) * 100
+            else:
+                percentual_frequencia = 0
+
+            # Exibir Resumo de Frequência
+            st.markdown("#### Resumo de Frequência")
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("Total Presentes", presentes)
+            col2.metric("Total Visitantes", visitantes)
+            col3.metric("Total Ausentes", ausentes)
+            col4.metric("Percentual de Frequência", f"{percentual_frequencia:.2f}%")
+
+            # Listar Presenças para o Evento
             data = []
             for presenca in presencas:
                 adolescente = session.query(Adolescente).filter_by(id=presenca.adolescente_id).first()
@@ -180,7 +170,7 @@ def historico_eventos():
             df = pd.DataFrame(data)
             st.table(df)
 
-            # Mostrar visitantes deste evento
+            # Mostrar Visitantes do Evento
             visitantes = session.query(Visitante).filter_by(evento_id=evento.id).all()
             if visitantes:
                 st.write("**Visitantes:**")
@@ -194,7 +184,6 @@ def historico_eventos():
                     })
                 df_visitantes = pd.DataFrame(data_visitantes)
                 st.table(df_visitantes)
-
 
 
 # Adicionar o campo 'presente' na tabela Presenca
