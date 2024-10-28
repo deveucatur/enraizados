@@ -10,8 +10,8 @@ import base64
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
 # Configurações do GitHub
-GITHUB_USER = "deveucatur"
-GITHUB_REPO = "enraizados"
+GITHUB_USER = "seu_usuario"
+GITHUB_REPO = "seu_repositorio"
 BACKUP_FILE = "backup_dados.json"
 BRANCH = "main"
 
@@ -22,18 +22,17 @@ def exportar_dados():
     presencas = session.query(Presenca).all()
     visitantes = session.query(Visitante).all()
 
+    # Função para converter objetos ORM em dicionários com apenas colunas
+    def to_dict(obj):
+        return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+
     # Converter para formatos serializáveis em JSON
     dados = {
-        "adolescentes": [a.__dict__ for a in adolescentes],
-        "eventos": [e.__dict__ for e in eventos],
-        "presencas": [p.__dict__ for p in presencas],
-        "visitantes": [v.__dict__ for v in visitantes],
+        "adolescentes": [to_dict(a) for a in adolescentes],
+        "eventos": [to_dict(e) for e in eventos],
+        "presencas": [to_dict(p) for p in presencas],
+        "visitantes": [to_dict(v) for v in visitantes],
     }
-
-    # Remover campos privados
-    for tabela in dados.values():
-        for item in tabela:
-            item.pop('_sa_instance_state', None)
 
     # Converter para JSON
     json_dados = json.dumps(dados, indent=4, default=str)
@@ -67,7 +66,7 @@ def fazer_commit_github(conteudo, mensagem_commit):
         data["sha"] = sha
 
     response = requests.put(url, headers=headers, data=json.dumps(data))
-    if response.status_code == 201 or response.status_code == 200:
+    if response.status_code in (200, 201):
         st.success("Backup feito com sucesso e enviado para o GitHub!")
     else:
         st.error(f"Erro ao fazer o commit no GitHub: {response.json()}")
@@ -92,20 +91,31 @@ def restaurar_dados():
         session.query(Evento).delete()
         session.commit()
 
+        # Função para filtrar apenas colunas do modelo
+        def filter_columns(model, data):
+            model_columns = set(c.name for c in model.__table__.columns)
+            # Opcional: Remover 'id' se não quiser definir manualmente
+            # model_columns.discard('id')
+            return {k: v for k, v in data.items() if k in model_columns}
+
         # Restaurar dados
         for item in dados["adolescentes"]:
+            item = filter_columns(Adolescente, item)
             novo_adolescente = Adolescente(**item)
             session.add(novo_adolescente)
 
         for item in dados["eventos"]:
+            item = filter_columns(Evento, item)
             novo_evento = Evento(**item)
             session.add(novo_evento)
 
         for item in dados["presencas"]:
+            item = filter_columns(Presenca, item)
             nova_presenca = Presenca(**item)
             session.add(nova_presenca)
 
         for item in dados["visitantes"]:
+            item = filter_columns(Visitante, item)
             novo_visitante = Visitante(**item)
             session.add(novo_visitante)
 
@@ -133,4 +143,3 @@ def backup_recuperacao():
             restaurar_dados()
 
 backup_recuperacao()
-
