@@ -7,7 +7,7 @@ import datetime
 import base64
 
 # Carregar o token do GitHub das secrets
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
 # Configurações do GitHub
 GITHUB_USER = "deveucatur"
