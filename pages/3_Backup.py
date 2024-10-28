@@ -9,7 +9,6 @@ import base64
 # Carregar o token do GitHub das secrets
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
-st.write(GITHUB_TOKEN)
 
 # Configurações do GitHub
 GITHUB_USER = "deveucatur"
@@ -136,6 +135,7 @@ def backup_recuperacao():
         if st.button("Fazer Backup"):
             json_dados = exportar_dados()
             conteudo_base64 = codificar_conteudo(json_dados)
+            st.write(conteudo_base64)
             mensagem_commit = f"Backup automático em {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
             fazer_commit_github(conteudo_base64, mensagem_commit)
 
