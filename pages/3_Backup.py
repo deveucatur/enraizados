@@ -5,7 +5,6 @@ import os
 import requests
 import datetime
 import base64
-from dotenv import load_dotenv
 
 # Carregar o token do GitHub das secrets
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
