@@ -9,6 +9,8 @@ import base64
 # Carregar o token do GitHub das secrets
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
+st.write(GITHUB_TOKEN)
+
 # Configurações do GitHub
 GITHUB_USER = "deveucatur"
 GITHUB_REPO = "enraizados"
