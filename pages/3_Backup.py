@@ -5,10 +5,10 @@ import os
 import requests
 import datetime
 import base64
+import sqlalchemy
 
 # Carregar o token do GitHub das secrets
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
-
 
 # Configurações do GitHub
 GITHUB_USER = "deveucatur"
@@ -25,7 +25,12 @@ def exportar_dados():
 
     # Função para converter objetos ORM em dicionários com apenas colunas
     def to_dict(obj):
-        return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+        data = {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+        # Converter objetos date/datetime para strings
+        for key, value in data.items():
+            if isinstance(value, (datetime.date, datetime.datetime)):
+                data[key] = value.isoformat()
+        return data
 
     # Converter para formatos serializáveis em JSON
     dados = {
@@ -47,7 +52,7 @@ def codificar_conteudo(conteudo):
 def fazer_commit_github(conteudo, mensagem_commit):
     url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{BACKUP_FILE}"
     headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
 
@@ -73,9 +78,11 @@ def fazer_commit_github(conteudo, mensagem_commit):
         st.error(f"Erro ao fazer o commit no GitHub: {response.json()}")
 
 def restaurar_dados():
+    import datetime
+
     url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{BACKUP_FILE}?ref={BRANCH}"
     headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
 
@@ -92,31 +99,43 @@ def restaurar_dados():
         session.query(Evento).delete()
         session.commit()
 
-        # Função para filtrar apenas colunas do modelo
-        def filter_columns(model, data):
-            model_columns = set(c.name for c in model.__table__.columns)
-            # Opcional: Remover 'id' se não quiser definir manualmente
-            # model_columns.discard('id')
-            return {k: v for k, v in data.items() if k in model_columns}
+        # Função para filtrar e converter colunas do modelo
+        def process_item(model, data):
+            model_columns = {c.name: c.type for c in model.__table__.columns}
+            processed_data = {}
+            for key, value in data.items():
+                if key in model_columns:
+                    column_type = model_columns[key]
+                    if isinstance(column_type, (sqlalchemy.Date, sqlalchemy.DateTime)):
+                        if value is not None:
+                            if isinstance(column_type, sqlalchemy.Date):
+                                processed_data[key] = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+                            elif isinstance(column_type, sqlalchemy.DateTime):
+                                processed_data[key] = datetime.datetime.fromisoformat(value)
+                        else:
+                            processed_data[key] = None
+                    else:
+                        processed_data[key] = value
+            return processed_data
 
         # Restaurar dados
         for item in dados["adolescentes"]:
-            item = filter_columns(Adolescente, item)
+            item = process_item(Adolescente, item)
             novo_adolescente = Adolescente(**item)
             session.add(novo_adolescente)
 
         for item in dados["eventos"]:
-            item = filter_columns(Evento, item)
+            item = process_item(Evento, item)
             novo_evento = Evento(**item)
             session.add(novo_evento)
 
         for item in dados["presencas"]:
-            item = filter_columns(Presenca, item)
+            item = process_item(Presenca, item)
             nova_presenca = Presenca(**item)
             session.add(nova_presenca)
 
         for item in dados["visitantes"]:
-            item = filter_columns(Visitante, item)
+            item = process_item(Visitante, item)
             novo_visitante = Visitante(**item)
             session.add(novo_visitante)
 
