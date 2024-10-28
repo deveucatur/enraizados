@@ -134,6 +134,7 @@ def backup_recuperacao():
         st.write("Esta ação irá exportar todos os dados do banco de dados para um arquivo JSON e fazer o commit no GitHub.")
         if st.button("Fazer Backup"):
             json_dados = exportar_dados()
+            st.write(json_dados)
             conteudo_base64 = codificar_conteudo(json_dados)
             st.write(conteudo_base64)
             mensagem_commit = f"Backup automático em {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
